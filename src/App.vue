@@ -1,50 +1,56 @@
 <template>
   <div class="wrapper">
     <div class="main">
-      <div class="tasks">
-        <div @click="(e, task) => setActiveRow(task)" class="task" v-for="task in tasks">
-          {{task.text}}
-          <span @click="() => handleDelete(task.id)" class="icon-delete">X</span>
-        </div>
-      </div>
-      <input type="text" class="input" v-model="text" @keyup="createTask">
+      <Tasks @deleteTask="handleDelete" @finishTask="editTask" @clickTask="setActiveRow" :hideDetail="hideDetail" :tasks="tasks"></Tasks>
+      <CreateTask @createTask="addTask"></CreateTask>
     </div>
 
-    <aside class="detail">
-      {{ activeRow.text }}
-    </aside>
+    <TaskDetail :activeRow={activeRow} @editTask="editTask" v-if="showDetail"></TaskDetail>
   </div>
 </template>
 
 
 <script>
+import CreateTask from './components/CreateTask.vue'
+import Tasks from './components/Tasks.vue'
+import TaskDetail from './components/TaskDetail.vue'
+
+
+
 export default {
+  components: {
+    CreateTask,
+    Tasks,
+    TaskDetail
+  },
   data() {
     return {
       counter: 10,
       text: '',
       tasks: [],
-      activeRow: {}
+      activeRow: {},
+      showDetail: false,
     }
   },
   methods: {
-    createTask(e) {
-      if(e.keyCode === 13) {
-        this.tasks.push({
-          id: Math.random(),
-          text: this.text
-        })
-        this.text = ''
-      }
-      
+    addTask(task) {
+      this.tasks.push(task)
+    },
+    hideDetail() {
+      this.showDetail = false
     },
     handleDelete(idTask) {
       this.tasks = this.tasks.filter((item) => item.id !==  idTask)
     },
     setActiveRow(row) {
-      console.log(row)
-      this.activeRow = {row}
-      console.log(this.activeRow)
+      this.activeRow = {...row}
+      this.showDetail = true
+    },
+    editTask(task) {
+      const index = this.tasks.findIndex((item) => item.id === task.id)
+      this.tasks[index] = task
+
+      console.log(this.tasks)
     }
   }
 }
@@ -72,39 +78,5 @@ body {
 
 .main {
   width: 100%;
-}
-
-.tasks {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.task {
-  position: relative;
-  padding: 15px 20px;
-  background-color: #EEEEEE;
-
-  &:hover {
-    background-color: lighten($color: #EEEEEE, $amount: 1%);
-  }
-}
-
-.icon-delete {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-}
-
-.input {
-  width: 100%;
-  padding: 15px 20px;
-}
-
-.detail {
-  width: 300px;
-  background-color: #E8D5C4;
-  height: 100%;
 }
 </style>
