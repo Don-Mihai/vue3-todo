@@ -1,58 +1,59 @@
 <template>
-  <div class="wrapper">
-    <div class="main">
-      <Tasks @deleteTask="handleDelete" @finishTask="editTask" @clickTask="setActiveRow" :hideDetail="hideDetail" :tasks="tasks"></Tasks>
-      <CreateTask @createTask="addTask"></CreateTask>
-    </div>
+  <div class="app">
 
-    <TaskDetail :activeRow={activeRow} @editTask="editTask" v-if="showDetail"></TaskDetail>
+      <div class="tasks-container">
+        <Tasks :tasks="tasks" @deleteTask="deleteTask" @finishTask="finishTask" @openDetail="openDetail" />
+        <CreateTask @createTask="createTask" />
+      </div>
+
+      <TaskDetail :activeRow="activeRow" @closeDetail="closeDetail" @editTask="editTask" />
+
   </div>
 </template>
-
-
 <script>
 import CreateTask from './components/CreateTask.vue'
 import Tasks from './components/Tasks.vue'
 import TaskDetail from './components/TaskDetail.vue'
 
-
-
 export default {
+  name: 'App',
   components: {
-    CreateTask,
     Tasks,
-    TaskDetail
+    TaskDetail,
+    CreateTask
   },
   data() {
     return {
-      counter: 10,
-      text: '',
       tasks: [],
-      activeRow: {},
-      showDetail: false,
+      activeRow: null
     }
   },
   methods: {
-    addTask(task) {
-      this.tasks.push(task)
+    createTask(task) {
+      this.tasks.push(task);
     },
-    hideDetail() {
-      this.showDetail = false
+    deleteTask(taskId) {
+      this.tasks = this.tasks.filter(task => task.id !== taskId);
+      this.activeRow = null;
     },
-    handleDelete(idTask) {
-      this.tasks = this.tasks.filter((item) => item.id !==  idTask)
+    finishTask(payload) {
+      const index = this.tasks.findIndex(task => task.id === payload.id);
+      this.$set(this.tasks, index, payload);
     },
-    setActiveRow(row) {
-      this.activeRow = {...row}
-      this.showDetail = true
-    },
-    editTask(task) {
-      const index = this.tasks.findIndex((item) => item.id === task.id)
-      this.tasks[index] = task
+    openDetail(taskId) {
+      const activeRow = this.tasks.find(task => task.id === taskId);
+  this.activeRow = { activeRow };
+},
+closeDetail() {
+  this.activeRow = null;
+},
+editTask(payload) {
+  const index = this.tasks.findIndex(task => task.id === payload.id);
+  this.$set(this.tasks, index, payload);
+  this.closeDetail();
+}
 
-      console.log(this.tasks)
-    }
-  }
+}
 }
 </script>
 
@@ -71,12 +72,7 @@ body {
   height: 100vh;
 }
 
-.wrapper {
-  display: flex;
-  height: 100%;
-}
-
-.main {
-  width: 100%;
+.app {
+  
 }
 </style>
