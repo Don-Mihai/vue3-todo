@@ -1,7 +1,8 @@
 <template>
   <div class="tasks">
-    <div v-for="task in tasks" :key="task.id" class="task" @click="() => handleTaskClick(task)">
-      <div class="task-info">
+    <div v-for="task in tasks" :key="task.id" class="task" v-bind:class="{ active: task.id == $route.query.taskId }"
+      @click="() => handleTaskClick(task)">
+      <div class="task-info" @click="$router.push({ query: {taskId: task.id} })">
         <input type="checkbox" class="checkbox" @click.stop="handleFinishTask(task)">
         <span class="task-text">{{ task.text }}</span>
       </div>
@@ -34,6 +35,7 @@ export default {
       this.$emit('finishTask', payload)
     },
     handleTaskClick(task) {
+      console.log(this.$route.query)
       this.openDetail(task.id)
     },
     openDetail(taskId) {
@@ -44,7 +46,6 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-
 .tasks {
   display: flex;
   flex-direction: column;
@@ -64,6 +65,11 @@ export default {
   transition: all 0.3s ease;
 
   &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  &.active {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
@@ -88,7 +94,7 @@ export default {
     border-color: #394867;
   }
 
-  &:checked + .task-text {
+  &:checked+.task-text {
     text-decoration: line-through;
     color: #9BA4B5;
   }
@@ -119,5 +125,4 @@ export default {
     color: #212A3E;
   }
 }
-
 </style>
