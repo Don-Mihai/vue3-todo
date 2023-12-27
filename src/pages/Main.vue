@@ -1,6 +1,6 @@
 <template>
   Добро пожаловать на страничке TODO
-  <button>Приступить к созданию задачки</button>
+  <button @click="$router.push('/tasks')">Приступить к созданию задачки</button>
 </template>
 <script>
 

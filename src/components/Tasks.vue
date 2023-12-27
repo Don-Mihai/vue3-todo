@@ -1,14 +1,19 @@
 <template>
   <div class="tasks">
-    <div v-for="task in tasks" :key="task.id" class="task" v-bind:class="{ active: task.id == $route.query.taskId }"
+    <div v-for="(task, index) in tasks" :key="task.id" v-bind:class="{ active: task.id == $route.query.taskId }"
       @click="() => handleTaskClick(task)">
-      <div class="task-info" @click="$router.push({ query: {taskId: task.id} })">
-        <input type="checkbox" class="checkbox" @click.stop="handleFinishTask(task)">
-        <span class="task-text">{{ task.text }}</span>
-      </div>
-      <div class="task-actions">
-        <button class="delete-btn" @click.stop="() => handleDelete(task.id)">Удалить</button>
-      </div>
+        
+
+        <div class="task">
+          <div class="task-info" @click="$router.push({ query: {taskId: task.id} })">
+            <input type="checkbox" v-bind:checked="checked" class="checkbox"  @click="(e) =>handleFinishTask(e, task)">
+            <span class="task-text">{{ task.text }}</span>
+          </div>
+          <div class="task-actions">
+            <button class="delete-btn" @click.stop="() => handleDelete(task.id)">Удалить</button>
+          </div>
+        </div>
+        <div class="tasks__group" v-if="showDate(task.time, tasks[index + 1]?.time)">{{ task.time.split(',')[0] }}</div>
     </div>
   </div>
 </template>
@@ -16,7 +21,8 @@
 export default {
   name: 'Tasks',
   props: {
-    tasks: Array
+    tasks: Array,
+    checked: Boolean
   },
   data() {
     return {
@@ -27,12 +33,12 @@ export default {
     handleDelete(taskId) {
       this.$emit('deleteTask', taskId)
     },
-    handleFinishTask(task) {
+    handleFinishTask(e, task) {
       const payload = {
         ...task,
         isFinished: true,
       }
-      this.$emit('finishTask', payload)
+      this.$emit('finishTask', payload, e.target.checked)
     },
     handleTaskClick(task) {
       console.log(this.$route.query)
@@ -41,6 +47,14 @@ export default {
     openDetail(taskId) {
       this.activeTaskId = taskId;
       this.$emit('openDetail', taskId);
+    },
+    showDate(prevTime, nextTime) {
+      if(nextTime === undefined) {
+        return false
+      }
+
+      return prevTime?.split(',')[0] !== nextTime?.split(',')[0]
+
     }
   }
 }
@@ -51,6 +65,12 @@ export default {
   flex-direction: column;
   flex-grow: 1;
   gap: 15px;
+
+  &__group {
+    width: fit-content;
+    margin: 0 auto;
+    margin-top: 10px;
+  }
 }
 
 .task {

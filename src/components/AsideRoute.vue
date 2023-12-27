@@ -13,6 +13,7 @@
     <router-link class="link" to="my-day">Мой день</router-link>
     <router-link class="link" to="important">Важно</router-link>
     <router-link class="link" to="tasks">Задачи</router-link>
+    <router-link class="link" to="tasks-finished">Завершенные</router-link>
   </nav>
 
  </aside>

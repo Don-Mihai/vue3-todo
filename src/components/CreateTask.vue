@@ -12,25 +12,32 @@ export default {
   data() {
     return {
       text: '',
-      isFocus: false
+      isFocus: false,
+      taskCount: 0
     }
   },
   methods: {
     createTask() {
       if (this.text.trim()) {
         const now = new Date();
+        
         const options = { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric' };
-        const dateTime = now.toLocaleDateString('en-US', options); // "April 26, 2023, 12:34 PM"
+
+        this.taskCount++;
+
+        now.setDate(now.getDate() - Math.floor(this.taskCount/5));
+
 
         const payload = {
-          id: Math.random(),
           text: this.text,
-          time: dateTime,
+          time: now.toLocaleDateString('en-US', options),
         }
 
-        this.$emit('createTask', payload)
+        this.$emit('createTask', payload);
 
-        this.text = ''
+        
+        this.text = '';
+
       }
     }
   }
